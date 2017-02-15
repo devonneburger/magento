@@ -1,1 +1,75 @@
-
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Eftsecure_Custompaymentmethod>
+      <version>1.0.0.0</version>
+    </Eftsecure_Custompaymentmethod>
+  </modules>
+ 
+  <global>
+    <fieldsets>
+      <sales_convert_quote_payment>
+        <eftsecure_username>
+          <to_order_payment>*</to_order_payment>
+        </eftsecure_username>
+        <eftsecure_password>
+          <to_order_payment>*</to_order_payment>
+        </eftsecure_password>
+		<eftsecure_description>
+          <to_order_payment>*</to_order_payment>
+        </eftsecure_description>
+      </sales_convert_quote_payment>
+    </fieldsets>
+     
+    <helpers>
+      <custompaymentmethod>
+        <class>Eftsecure_Custompaymentmethod_Helper</class>
+      </custompaymentmethod>
+    </helpers>
+ 
+    <blocks>
+      <custompaymentmethod>
+        <class>Eftsecure_Custompaymentmethod_Block</class>
+      </custompaymentmethod>
+    </blocks>
+         
+    <models>
+      <custompaymentmethod>
+        <class>Eftsecure_Custompaymentmethod_Model</class>
+      </custompaymentmethod>
+    </models>
+ 
+    <resources>
+      <custompaymentmethod_setup>
+        <setup>
+          <module>Eftsecure_Custompaymentmethod</module>
+        </setup>
+      </custompaymentmethod_setup>
+    </resources>
+  </global>
+ 
+  <default>
+    <payment>
+      <custompaymentmethod>
+        <active>1</active>
+        <model>custompaymentmethod/paymentmethod</model>
+        <order_status>pending</order_status>
+        <title>EFTsecure</title>
+        <allowspecific>0</allowspecific>
+        <payment_action>sale</payment_action>
+      </custompaymentmethod>
+    </payment>
+  </default>
+   
+  <frontend>
+    <routers>
+      <custompaymentmethod>
+        <use>standard</use>
+        <args>
+          <module>Eftsecure_Custompaymentmethod</module>
+          <frontName>custompaymentmethod</frontName>
+        </args>
+      </custompaymentmethod>
+    </routers>
+  </frontend>
+</config>
