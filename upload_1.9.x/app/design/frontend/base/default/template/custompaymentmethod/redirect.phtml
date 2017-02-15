@@ -1,1 +1,46 @@
+<script type="text/javascript">
+window.addEventListener("message", function(event) {
+    eval(event.data);
+});
+</script>
+<?php
+$order = new Mage_Sales_Model_Order();
+$orderId = Mage::getSingleton('checkout/session')->getLastRealOrderId();
+$order->loadByIncrementId($orderId);
+ 
+$params = array(
+	"reference" 		=> 'order_'.$orderId,
+	"organisation_id" 	=> Mage::getSingleton('core/session')->getEftsecureOrganisation(),
+	"token" 			=> Mage::getSingleton('core/session')->getEftsecureToken(),
+	"amount" 			=> number_format($order->getGrandTotal(), 2),
+	"pcolor" 			=> '',
+	"scolor" 			=> '',
+);
+$eftsecure_description = Mage::getStoreConfig('payment/custompaymentmethod/eftsecure_description');
+?>
+<h1><?php echo $this->__('EFTsecure Payment Gateway') ?></h1>
+<?php if($eftsecure_description){ ?>
+	<p><?php echo nl2br($eftsecure_description); ?></p>
+<?php } ?>
+<br>
+<h3>Pay using your internet banking login.</h3>
+<form name="custompaymentmethod" id="add_payment" method="post" action="<?php echo Mage::helper('custompaymentmethod')->getPaymentGatewayUrl(); ?>">
+  <input type="hidden" name="orderId" value="<?php echo $orderId; ?>">
+  <input type="submit" id="place_order" class="button" value="<?php echo $this->__('Click Here') ?>" />
+</form>
 
+<style>
+#add_payment input[type="submit"]{
+	background-color: #222;
+	color: #fff;
+	padding: 1em 2em;
+	font-size: 16px;
+}
+</style>
+
+<script type="text/javascript" src="<?php echo Mage::getBaseUrl('js'); ?>eftsecure/jquery.blockUI.min.js"></script>
+<script type="text/javascript" src="https://eftsecure.callpay.com/ext/eftsecure/js/checkout.js"></script>
+<script>
+	var mg_eftsecure_params = <?php echo Mage::helper('core')->jsonEncode($params); ?>;
+</script>
+<script type="text/javascript" src="<?php echo Mage::getBaseUrl('js'); ?>eftsecure/eftsecure_checkout.js"></script>
