@@ -1,1 +1,8 @@
+<?php
+$store = Mage::app()->getStore()->getStoreId(); 
+$eftsecure_description = Mage::getStoreConfig('payment/custompaymentmethod/eftsecure_description',$store); 
+?>
 
+<ul id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none">
+    <li><?php echo nl2br($eftsecure_description); ?></li>
+</ul>
