@@ -48,8 +48,7 @@ class Eftsecure_Custompaymentmethod_PaymentController extends Mage_Core_Controll
 			Mage::getSingleton('core/session')->setEftsecureToken('');
 			Mage::getSingleton('core/session')->setEftsecureOrganisation('');
 		}
-		//Mage::getSingleton('core/session')->getEftsecureToken();
-		//Mage::getSingleton('core/session')->unsEftsecureToken();
+		
 		$this->loadLayout();
 		$block = $this->getLayout()->createBlock('Mage_Core_Block_Template','custompaymentmethod',array('template' => 'custompaymentmethod/redirect.phtml'));
 		$this->getLayout()->getBlock('content')->append($block);
