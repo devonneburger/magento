@@ -61,16 +61,36 @@ class Eftsecure_Custompaymentmethod_PaymentController extends Mage_Core_Controll
  
   public function responseAction() {
     if ($this->getRequest()->get("flag") == "1" && $this->getRequest()->get("orderId") && $this->getRequest()->get("eftsecure_transaction_id")) {
-      $orderId = $this->getRequest()->get("orderId");
-      $order = Mage::getModel('sales/order')->loadByIncrementId($orderId);
-      $order->setState(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW, true, 'Payment Success.');
-      $order->save();
-       
-      Mage::getSingleton('checkout/session')->unsQuoteId();
-	  Mage::getSingleton('core/session')->unsEftsecureFlag();
-	  Mage::getSingleton('core/session')->unsEftsecureToken();
-	  Mage::getSingleton('core/session')->unsEftsecureOrganisation();
-      Mage_Core_Controller_Varien_Action::_redirect('checkout/onepage/success', array('_secure'=> false));
+		$gateway_reference = $this->getRequest()->get("eftsecure_transaction_id");
+		
+		$headers = array(
+			'X-Token: '.Mage::getSingleton('core/session')->getEftsecureToken(),
+		);
+		
+		$curl = curl_init('https://services.callpay.com/api/v1/gateway-transaction/'.$gateway_reference);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+		$response = curl_exec($curl);
+		curl_close($curl);
+		
+		$response_data = json_decode($response);
+		if($response_data->id == $gateway_reference && $response_data->successful == 1) {
+			$orderId = $this->getRequest()->get("orderId");
+			$order = Mage::getModel('sales/order')->loadByIncrementId($orderId);
+			$order->setState(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW, true, 'Payment Success.');
+			$order->save();
+
+			Mage::getSingleton('checkout/session')->unsQuoteId();
+			Mage::getSingleton('core/session')->unsEftsecureFlag();
+			Mage::getSingleton('core/session')->unsEftsecureToken();
+			Mage::getSingleton('core/session')->unsEftsecureOrganisation();
+			Mage_Core_Controller_Varien_Action::_redirect('checkout/onepage/success', array('_secure'=> false));
+		} else {
+			Mage_Core_Controller_Varien_Action::_redirect('checkout/onepage/error', array('_secure'=> false));
+		}
     } else {
       Mage_Core_Controller_Varien_Action::_redirect('checkout/onepage/error', array('_secure'=> false));
     }
